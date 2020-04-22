@@ -26,7 +26,14 @@ public class LocationController {
 	@Autowired
 	LocationService service;
 	
+	@Autowired
+	LocationRepository repository;
 	
+	@Autowired
+	ReportUtil reportUtil;
+	
+	@Autowired
+	ServletContext context;
 	
 	@Autowired
 	EmailUtil emailUtil;
@@ -87,5 +94,19 @@ public class LocationController {
 		return "displayLocations";
 	}
 	
-
+	@RequestMapping("/generateReport")
+	public String generateReport()
+	{
+		
+		/* It will return as the web application root,
+		 *  when our application run on servicer it will take the path(relative)
+		 *  and then we use that path to store our image,
+		 *  so that jsp can point to it and read it send it back to user
+		 */
+		String path = context.getRealPath("/");    
+		List<Object[]>  data = repository.findByTypeAndTypeCount();
+		reportUtil.generatePieChart(path, data);
+		return "report";
+	
+	}
 }
